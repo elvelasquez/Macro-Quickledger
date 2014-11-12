@@ -1,0 +1,150 @@
+'Luis Velasquez AC2016!!! Summer of 2014 here in El Museo
+'If you see this feel free to ask questions at malicious.pigeon@outlook.com
+
+Sub newEntries()
+
+' Keyboard Shortcut: Ctrl+e
+  'A little method to use when we have to add entries from one seperate spreadsheet into our Main.
+  'That cordoned off section is where we'll decide which new columns go into their appropriate columns in the "Main" sheet
+  'Not integrated into tool bar
+    Dim rng1 As Range
+    Dim strSearch As String
+    strSearch = ActiveCell.Value
+    Set rng1 = Worksheets("Main").Range("A1:A1000").Find(strSearch, , xlValues, xlWhole)
+    If Not rng1 Is Nothing Then
+    MsgBox ("Already here")
+    Else
+    Worksheets("Main").Range("A1").End(xlDown).Offset(1, 0).Value = strSearch
+    
+    '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    'Make changes and add stuff below this line!
+    '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    
+    Worksheets("Main").Range("A1").End(xlDown).Offset(0, 5).Value = ActiveCell.Offset(0, 1).Value
+    
+    
+    
+    
+    
+    
+    '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    'Don't chage things beyond this point
+    '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    
+    End If
+    ActiveCell.Offset(1, 0).Select
+
+End Sub
+
+Private Sub Auto_Open()
+  'Starts up as soon we open the worksheet. Since these are Macros in the end, changes can't be undone like normal,
+  'This backup (and backup backup) are created just in case a change must be reverted.
+    Dim limit As Integer
+    limit = 1000
+    Sheets("Backup").Cells.Copy
+    Sheets("Backup 2").Cells.PasteSpecial xlPasteAll
+    Sheets("Backup 2").Cells.PasteSpecial xlPasteColumnWidths
+    Sheets("Backup 2").Range("1:1000").RowHeight = Sheets("Backup").Range("1:1000").RowHeight
+    Sheets("Main").Cells.Copy
+    Sheets("Backup").Cells.PasteSpecial xlPasteAll
+
+    For r = 1 To limit
+        Sheets("Backup").Rows(r).RowHeight = Sheets("Main").Rows(r).RowHeight
+    Next r
+
+
+    Sheets("Find").Range("B1").Value = ""
+    Sheets("Find").Select
+    Application.CutCopyMode = False
+    ActiveWorkbook.Save
+End Sub
+
+Private Sub DODlistToMain()
+  'Sees if a certain entry already exists in main. Useful for checkin if we have duplicates ove multiple spreadsheets (not integrated)
+    Dim rng1 As Range
+    Dim strSearch As String
+    strSearch = ActiveCell.Value
+    Set rng1 = Worksheets("Main").Range("A:A").Find(strSearch, , xlValues, xlWhole)
+    If Not rng1 Is Nothing Then
+    MsgBox ("Already here")
+    Else
+    Worksheets("Main").Range("A1").End(xlDown).Offset(1, 0).Value = strSearch
+    End If
+    ActiveCell.Offset(1, 0).Select
+    
+End Sub
+
+
+'
+Sub copyRow()
+'This is the code allowing us to save anychanges in Find back into Main. Pretty Simple.
+'
+' Keyboard Shortcut: Ctrl+q
+'
+    Dim rng As Range
+    Dim strSearch As String
+    strSearch = Cells(ActiveCell.Row, 1).Value
+    Set rng = Worksheets("Main").Range("A:A").Find(strSearch, , xlValues, xlWhole)
+    If rng Is Nothing Then
+    MsgBox ("This name was not found in main sheet")
+    Exit Sub
+    End If
+   ' rng.EntireRow.Value = ActiveCell.EntireRow.Value
+   
+    ActiveCell.EntireRow.Select
+    Selection.Copy
+    rng.EntireRow.PasteSpecial xlPasteAll
+    rng.EntireRow.RowHeight = ActiveCell.EntireRow.RowHeight
+    ActiveCell.Offset(1, 0).Select
+    
+End Sub
+
+Sub newEntries2()
+' A second method to insert entries from one sheet to another. Two at once were needed at a few points so I made this.
+' Keyboard Shortcut: Ctrl+t
+
+    Dim rng1 As Range
+    Dim strSearch As String
+    strSearch = ActiveCell.Value
+    Set rng1 = Worksheets("Main").Range("A1:A1000").Find(strSearch, , xlValues, xlWhole)
+    If Not rng1 Is Nothing Then
+    MsgBox ("Already here")
+    Else
+    Worksheets("Main").Range("A1").End(xlDown).Offset(1, 0).Value = strSearch
+    Worksheets("Main").Range("A1").End(xlDown).Offset(0, 12).Value = ActiveCell.Offset(0, 1).Value
+    End If
+    ActiveCell.Offset(1, 0).Select
+
+End Sub
+
+Private Sub tempToMain()
+  'Earlier way to move entries into Main, just does the identifiers, Column A.
+    Dim rng1 As Range
+    Dim strSearch As String
+    strSearch = ActiveCell.Value
+    rng1 = Worksheets("Main").Range("A:A").Find(strSearch, , xlValues, xlWhole)
+    If Not rng1 Is Nothing Then
+    MsgBox ("Found")
+    Worksheets("Main").Range("A1").End(xlDown).Resize(1, 20).Value = ActiveCell.Resize(1, 20).Value
+    End If
+    ActiveCell.Offset(1, 0).Select
+    
+End Sub
+
+Private Sub removeFromDifSheetRowUnordered()
+'Remnent from the first month, also searches for duplicates and tells me where they are but in message box form (Sometimes useful if a sheet won't be merged)
+' Keyboard Shortcut: Ctrl+e
+'
+
+    Dim rng1 As Range
+    Dim strSearch As String
+    strSearch = ActiveCell.Value
+    Set rng1 = Worksheets("Sheet3").Range("A:A").Find(strSearch, , xlValues, xlWhole)
+    MsgBox ActiveSheet.Name & "!" & rng.Address(ReferenceStyle:=xlR1C1)
+    rng1.Offset(0, 8).Value = " JP"
+
+    ActiveCell.Offset(1, 0).Select
+
+
+End Sub
+
