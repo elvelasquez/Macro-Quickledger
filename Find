@@ -1,0 +1,171 @@
+
+
+'Luis Velasquez AC2016!!! Summer of 2014 here in El Museo
+'If you see this feel free to ask questions at malicious.pigeon@outlook.com
+
+Private Sub toggleSearch()
+'This is the method run after pressing the change search button.
+If (ActiveSheet.Range("A1").Value = "Searching Names") Then
+    ActiveSheet.Range("A1").Value = "Searching Words"
+    Exit Sub
+End If
+    ActiveSheet.Range("A1").Value = "Searching Names"
+
+End Sub
+
+Private Sub reformatButton()
+'This is what happens on clicking reformat. It essentially copies whatever is in Main 
+Dim counter As Integer
+Dim borderLine As Range
+counter = 3
+Worksheets("FIND").Rows(2).Delete
+
+'There has to be a shorter way to do this
+Call clear
+Worksheets("FIND").Columns("A").ColumnWidth = Worksheets("Main").Columns("A").ColumnWidth
+Worksheets("FIND").Columns("B").ColumnWidth = Worksheets("Main").Columns("B").ColumnWidth
+Worksheets("FIND").Columns("C").ColumnWidth = Worksheets("Main").Columns("C").ColumnWidth
+Worksheets("FIND").Columns("D").ColumnWidth = Worksheets("Main").Columns("D").ColumnWidth
+Worksheets("FIND").Columns("E").ColumnWidth = Worksheets("Main").Columns("E").ColumnWidth
+Worksheets("FIND").Columns("F").ColumnWidth = Worksheets("Main").Columns("F").ColumnWidth
+Worksheets("FIND").Columns("G").ColumnWidth = Worksheets("Main").Columns("G").ColumnWidth
+Worksheets("FIND").Columns("H").ColumnWidth = Worksheets("Main").Columns("H").ColumnWidth
+Worksheets("FIND").Columns("I").ColumnWidth = Worksheets("Main").Columns("I").ColumnWidth
+Worksheets("FIND").Columns("J").ColumnWidth = Worksheets("Main").Columns("J").ColumnWidth
+Worksheets("FIND").Columns("K").ColumnWidth = Worksheets("Main").Columns("K").ColumnWidth
+Worksheets("FIND").Columns("L").ColumnWidth = Worksheets("Main").Columns("L").ColumnWidth
+Worksheets("FIND").Columns("M").ColumnWidth = Worksheets("Main").Columns("M").ColumnWidth
+Worksheets("FIND").Columns("N").ColumnWidth = Worksheets("Main").Columns("N").ColumnWidth
+Worksheets("FIND").Columns("O").ColumnWidth = Worksheets("Main").Columns("O").ColumnWidth
+Worksheets("FIND").Columns("P").ColumnWidth = Worksheets("Main").Columns("P").ColumnWidth
+Worksheets("FIND").Columns("Q").ColumnWidth = Worksheets("Main").Columns("Q").ColumnWidth
+Worksheets("FIND").Columns("R").ColumnWidth = Worksheets("Main").Columns("R").ColumnWidth
+Worksheets("FIND").Columns("S").ColumnWidth = Worksheets("Main").Columns("S").ColumnWidth
+Worksheets("FIND").Columns("T").ColumnWidth = Worksheets("Main").Columns("T").ColumnWidth
+Worksheets("FIND").Columns("U").ColumnWidth = Worksheets("Main").Columns("U").ColumnWidth
+Worksheets("FIND").Columns("V").ColumnWidth = Worksheets("Main").Columns("V").ColumnWidth
+Worksheets("Main").Rows(3).Copy
+Worksheets("Find").Rows(2).PasteSpecial xlPasteAllExceptBorders
+Worksheets("Find").Rows(2).Interior.ColorIndex = xlNone
+
+'Reformat time depends on the counter below. It's just for looks more than anything and mostly unnecesary past a few dozen.
+Do While counter <= 450
+    Worksheets("Find").Rows(counter).PasteSpecial xlPasteFormats
+    Worksheets("Find").Rows(counter).Interior.ColorIndex = xlNone
+    counter = counter + 1
+Loop
+
+Worksheets("Main").Rows(1).Copy
+Worksheets("Find").Rows(2).PasteSpecial xlPasteAll
+
+
+Call clear
+Call freeze
+End Sub
+
+Private Sub Worksheet_Change(ByVal Target As Range)
+    'When merged cell changes, showResults is called and run. Essentially initializing the search on a value change.
+
+    If Not Intersect(Target, Target.Worksheet.Range("B1")) Is Nothing Then
+    Call clear
+        If (ActiveSheet.Range("A1").Value = "Searching Names") Then
+            Call showResults
+            Exit Sub
+            End If
+        If (ActiveSheet.Range("A1").Value = "Searching Words") Then
+            Call showResultsWhole
+            Exit Sub
+        End If
+        
+    ActiveSheet.Range("A1").Value = "Searching Names"
+    Call showResults
+    End If
+    
+End Sub
+
+Private Sub showResultsWhole()
+  'Lists results if we've set the sheet to search the entire worksheet containing the information
+    Dim c As Range
+    Dim strSearch As String
+    Dim firstAddress As Range
+    Dim findHere As Range
+    
+    strSearch = Worksheets("FIND").Range("B1").Value
+    If (Len(strSearch) <= 1) Then Exit Sub
+    Set findHere = Worksheets("FIND").Range("A2")
+    
+
+    Set c = Worksheets("Main").Range("A3:Z500").Find(strSearch, , xlValues, xlPart)
+    If Not c Is Nothing Then
+        Set firstAddress = c.End(xlToLeft)
+        'Cells(c.Row, c.Column)
+        Do
+            Set findHere = findHere.Offset(1, 0)
+            
+            c.EntireRow.Copy
+            findHere.EntireRow.PasteSpecial (xlPasteAllExceptBorders)
+            findHere.EntireRow.RowHeight = c.EntireRow.RowHeight
+            
+            Set c = c.Offset(1, 0).End(xlToLeft)
+            Set c = Worksheets("Main").Range("A3:Z1000").FindNext(c)
+        Loop While Not c Is Nothing And c.End(xlToLeft).Address <> firstAddress.Address
+        ActiveSheet.Range("A3").Select
+        ActiveSheet.Range("B1").Select
+    Exit Sub
+    End If
+    Worksheets("FIND").Range("A3") = "No matches"
+
+End Sub
+
+Private Sub showResults()
+  'Lists results just from Column A if this is the selected search
+
+    Dim c As Range
+    Dim strSearch As String
+    Dim firstAddress As String
+    Dim findHere As Range
+    
+    strSearch = Worksheets("FIND").Range("B1").Value
+    If (Len(strSearch) <= 1) Then Exit Sub
+    Set findHere = Worksheets("FIND").Range("A2")
+    
+
+    Set c = Worksheets("Main").Range("A2:A1000").Find(strSearch, , xlValues, xlPart)
+    If Not c Is Nothing Then
+        firstAddress = c.Value
+        Do
+            Set findHere = findHere.Offset(1, 0)
+            
+            c.EntireRow.Copy
+            findHere.EntireRow.PasteSpecial (xlPasteAllExceptBorders)
+             
+            
+            findHere.EntireRow.RowHeight = c.EntireRow.RowHeight
+            'findHere.EntireRow.Value = c.EntireRow.Value
+            Set c = Worksheets("Main").Range("A2:A1000").FindNext(c)
+        Loop While Not c Is Nothing And c.Value <> firstAddress
+        ActiveSheet.Range("A3").Select
+        ActiveSheet.Range("B1").Select
+    Exit Sub
+    End If
+    Worksheets("FIND").Range("A3") = "No matches"
+
+End Sub
+
+Private Sub clear()
+'Clears All but first two rows (Tool Bar row and labels row exempted)
+Range("A3", "R600").Value = ""
+Range("A3", "R600").EntireRow.RowHeight = 55
+Range("A3", "R600").Interior.Color = xlNone
+
+End Sub
+
+Private Sub freeze()
+'Freezes the top two rows to make things more intuitive
+With ActiveWindow
+ActiveSheet.Range("A1").Select
+.FreezePanes = False
+ActiveSheet.Range("A3").Select
+.FreezePanes = True
+End With
+End Sub
